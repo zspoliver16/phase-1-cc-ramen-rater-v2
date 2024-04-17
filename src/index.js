@@ -1,75 +1,82 @@
-// index.js
+function displayRamens() {
+  fetch("http://localhost:3000/ramens")
+   .then((resp) => resp.json())
+   .then((data) => {
+    const imgContainer = document.querySelector('#ramen-menu')
+    
 
-///DELIVERABLES
-//See all ramen images in the div with the id of ramen-menu. When the page loads, fire a function called displayRamens that requests the data from the server to get all the ramen objects. Then, display the image for each of the ramen using an img tag inside the #ramen-menu div.
+    data.forEach((ramenObj) => {
+      const card = document.createElement('div')
+      card.classList.add('ramen-card')
 
-fetch("http:localhost:3000/ramens")
-     .then((resp) => resp.json())
-     .then((data) => displayRamens(data))
+      const name = document.createElement('h5')
+      name.textContent = ramenObj.name
+      card.appendChild(name)
 
-  //Callbacks
-// Click on an image from the #ramen-menu div and fire a callback called handleClick to see all the info about that ramen displayed inside the #ramen-detail div (where it says insert comment here and insert rating here).//
+      const rest = document.createElement('h6')
+      rest.textContent = ramenObj.restaurant;
+      card.appendChild(rest)
 
-const handleClick = (ramenArr) => {
-  // Add code
-  const ramenArr = document.querySelector("#new-ramen");
+      const rat = document.createElement('h7')
+      rat.textContent = `Rating: ${ramenObj.rating}`
+      card.appendChild(rat)
 
-//console.log(ramenDetail)
+      const comment = document.createElement('h8')
+      comment.textContent = `Comment: ${ramenObj.comment}`
+      card.appendChild(comment)
 
+      const img = document.createElement('img')
+      img.src = ramenObj.image 
+      card.appendChild(img)
+
+      img.addEventListener('click', () => handleClick(ramenObj))
+
+      imgContainer.appendChild(card)
+
+
+    })
+   })
+
+}
+
+function handleClick(ramenObj) {
+  const ramenDetail = document.querySelector('#ramen-detail')
   ramenDetail.innerHTML = `
-  <p>${ramen.comment}<p>
-  <p>Rating: ${ramen.rating}</p>
-  `
-};
+    <h2>${ramenObj.name}</h2>
+    <p><b>Restaurant:</b> ${ramenObj.restaurant}</p>
+    <p><b>Rating:</b> ${ramenObj.rating}</p>
+    <p><b>Comment:</b> ${ramenObj.comment}</p>
+    <img src="${ramenObj.image}" alt="${ramenObj.name}">`
+}
 
-//Attach a submit even listener to the new-ramen form using a function called addSubmitListener. After the submission, create a new ramen and add it to the#ramen-menu div. The new ramen does not need to persist; in other words, if you refresh the page, it's okay that the new ramen is no longer on the page.//
+function addSubmitListener() {
+  const form = document.querySelector('#new-ramen')
+  form.addEventListener('submit', (e) => {
+    e.preventDefault()
 
-const addSubmitListener = () => {
-  // Add code
-  const form = document.querySelector("#submit-button")
-  form.addEventListener("submit", (e) => {
-    e.preventDefault();
+    const name = form.elements['name'].value
+    const restaurant = form.elements['restaurant'].value
+    const rating = form.elements['rating'].value
+    const comment = form.elements['comment'].value
+    const image = form.elements['image'].value
 
     const newRamen = {
-      image: e.target.image.value,
-      comment: e.target.comment.value,
-      rating: e.target.rating.value,
-      restaurant: e.target.restaurant.value,
-      name: e.target.name.value
-    };
+      name: name,
+      restaurant: restaurant,
+      rating: rating,
+      comment: comment,
+      image: image
+    }
 
-    const ramenContainer = document.querySelector("#ramen-menu");
-    const img = document.createElement("img");
-    img.src = newRamen.image;
-    img.addEventListener("click", () => handleClick(newRamen));
-    ramenContainer.appendChild(img);
+    displayNewRamen(newRamen)
 
-  });
-};
+  })
+}
 
-const displayRamens = (ramenArr) => {
-  // Add code
-  const ramenContainer = document.querySelector("#ramen-menu");
-  ramenArr.forEach((ramen) => {
-    const img = document.createElement("img");
-    img.src = ramen.image;
-    img.addEventListenere("click", () => handleClick(ramen));
-    ramenContainer.appendChild(img);
+function main() {
 
-  });
-};
+displayRamens()
+addSubmitListener()
+}
 
-const main = () => {
-  
-  };
-
-displayRamens();
-addSubmitListener();
-
-// Export functions for testing
-export {
-  displayRamens,
-  addSubmitListener,
-  handleClick,
-  main,
-};
+document.addEventListener('DOMContentLoaded', main)
